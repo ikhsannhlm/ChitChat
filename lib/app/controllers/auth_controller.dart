@@ -14,7 +14,8 @@ class AuthController extends GetxController {
   GoogleSignIn _googleSignIn = GoogleSignIn();
   GoogleSignInAccount? _currentUser;
   UserCredential? userCredential;
-  UsersModel user = UsersModel();
+
+  var user = UsersModel().obs;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -66,15 +67,16 @@ class AuthController extends GetxController {
         final currUser = await users.doc(_currentUser!.email).get();
         final currUserData = currUser.data() as Map<String, dynamic>;
 
-        user = UsersModel(
-            uid: currUserData["uid"],
-            name: currUserData["name"],
-            email: currUserData["email"],
-            photoUrl: currUserData["photoUrl"],
-            status: currUserData["status"],
-            creationTime: currUserData["creationTime"],
-            lastSignInTime: currUserData["lastSignInTime"],
-            updatedTime: currUserData["updatedTime"]);
+        user(UsersModel(
+          uid: currUserData["uid"],
+          name: currUserData["name"],
+          email: currUserData["email"],
+          photoUrl: currUserData["photoUrl"],
+          status: currUserData["status"],
+          creationTime: currUserData["creationTime"],
+          lastSignInTime: currUserData["lastSignInTime"],
+          updatedTime: currUserData["updatedTime"],
+        ));
 
         return true;
       } else {
@@ -149,7 +151,7 @@ class AuthController extends GetxController {
                 userCredential!.user!.metadata.creationTime!.toIso8601String(),
             "lastSignInTime": userCredential!.user!.metadata.lastSignInTime!
                 .toIso8601String(),
-            "updateTime": DateTime.now().toIso8601String(),
+            "updatedTime": DateTime.now().toIso8601String(),
           });
         } else {
           users.doc(_currentUser!.email).update({
@@ -161,15 +163,16 @@ class AuthController extends GetxController {
         final currUser = await users.doc(_currentUser!.email).get();
         final currUserData = currUser.data() as Map<String, dynamic>;
 
-        user = UsersModel(
-            uid: currUserData["uid"],
-            name: currUserData["name"],
-            email: currUserData["email"],
-            photoUrl: currUserData["photoUrl"],
-            status: currUserData["status"],
-            creationTime: currUserData["creationTime"],
-            lastSignInTime: currUserData["lastSignInTime"],
-            updatedTime: currUserData["updatedTime"]);
+        user(UsersModel(
+          uid: currUserData["uid"],
+          name: currUserData["name"],
+          email: currUserData["email"],
+          photoUrl: currUserData["photoUrl"],
+          status: currUserData["status"],
+          creationTime: currUserData["creationTime"],
+          lastSignInTime: currUserData["lastSignInTime"],
+          updatedTime: currUserData["updatedTime"],
+        ));
 
         // untuk route ke halaman utama
         isAuth.value = true;
@@ -186,5 +189,63 @@ class AuthController extends GetxController {
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
     Get.offAllNamed(Routes.LOGIN);
+  }
+
+  //PROFILE
+
+  void changeProfile(String name, String status) {
+    String date = DateTime.now().toIso8601String();
+
+    // Update Firebase
+    CollectionReference users = firestore.collection('users');
+    users.doc(_currentUser!.email).update({
+      "name": name,
+      "status": status,
+      "lastSignInTime":
+          userCredential!.user!.metadata.lastSignInTime!.toIso8601String(),
+      "updatedTime": date,
+    });
+
+    // Update Model
+    user.update((user) {
+      user!.name = name;
+      user.status = status;
+      user.lastSignInTime =
+          userCredential!.user!.metadata.lastSignInTime!.toIso8601String();
+      user.updatedTime = date;
+    });
+
+    user.refresh();
+    Get.defaultDialog(
+      title: "Success",
+      middleText: "Change Profile Success",
+    );
+  }
+
+  void updateStatus(String status) {
+    String date = DateTime.now().toIso8601String();
+
+    // Update Firebase
+    CollectionReference users = firestore.collection('users');
+    users.doc(_currentUser!.email).update({
+      "status": status,
+      "lastSignInTime":
+          userCredential!.user!.metadata.lastSignInTime!.toIso8601String(),
+      "updatedTime": date,
+    });
+
+    // Update Model
+    user.update((user) {
+      user!.status = status;
+      user.lastSignInTime =
+          userCredential!.user!.metadata.lastSignInTime!.toIso8601String();
+      user.updatedTime = date;
+    });
+
+    user.refresh();
+    Get.defaultDialog(
+      title: "Success",
+      middleText: "Update Status Success",
+    );
   }
 }
