@@ -19,8 +19,8 @@ class SearchController extends GetxController {
 
       if (queryAwal.length == 0 && data.length == 1) {
         // fungsi yang akan dijalankan pada 1 huruf ketikan pertama
-        CollectionReference clients = firestore.collection("clients");
-        final keyNameResult = await clients
+        CollectionReference users = firestore.collection("users");
+        final keyNameResult = await users
             .where("keyName", isEqualTo: data.substring(0, 1).toUpperCase())
             .get();
         if (keyNameResult.docs.length > 0) {

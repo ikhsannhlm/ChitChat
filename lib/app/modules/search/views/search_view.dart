@@ -78,6 +78,8 @@ class SearchView extends GetView<SearchController> {
                 padding: EdgeInsets.zero,
                 itemCount: controller.tempSearch.length,
                 itemBuilder: (context, index) => ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                   leading: CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.black26,
