@@ -1,3 +1,4 @@
+import 'package:chitchat/app/data/models/chats_model.dart';
 import 'package:chitchat/app/routes/app_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -232,5 +233,47 @@ class AuthController extends GetxController {
       title: "Success",
       middleText: "Update Status Success",
     );
+  }
+
+  //SEARCH
+
+  void addNewConnection(String friendEmail) async {
+    String date = DateTime.now().toIso8601String();
+    CollectionReference chats = firestore.collection("chats");
+    final newChatDoc = await chats.add({
+      "connectons": [
+        _currentUser!.email,
+        friendEmail,
+      ],
+      "total_chats": 0,
+      "total_read": 0,
+      "total_unread": 0,
+      "chat": [],
+      "lastTime": date,
+    });
+
+    CollectionReference users = firestore.collection("users");
+    await users.doc(_currentUser!.email).update({
+      "chats": [
+        {
+          "connection": friendEmail,
+          "chat_id": newChatDoc.id,
+          "lastTime": date,
+        }
+      ]
+    });
+
+    user.update((user) {
+      user!.chats = [
+        ChatUser(
+          chatId: newChatDoc.id,
+          connection: friendEmail,
+          lastTime: date,
+        )
+      ];
+    });
+
+    user.refresh();
+    Get.toNamed(Routes.CHAT_ROOM);
   }
 }
