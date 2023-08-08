@@ -24,11 +24,21 @@ class AuthController extends GetxController {
         isAuth.value = true;
       }
     });
+
     await skipIntro().then((value) {
       if (value) {
         isSkipIntro.value = true;
       }
     });
+  }
+
+  Future<bool> skipIntro() async {
+    // untuk mengubah isSkipIntro => true
+    final box = GetStorage();
+    if (box.read('skipIntro') != null || box.read('skipIntro') == true) {
+      return true;
+    }
+    return false;
   }
 
   Future<bool> autologin() async {
@@ -52,9 +62,6 @@ class AuthController extends GetxController {
             .signInWithCredential(credential)
             .then((value) => userCredential = value);
 
-        print("User credential:");
-        print(userCredential);
-
         // masukkan data ke firebase
         CollectionReference users = firestore.collection('users');
 
@@ -66,24 +73,48 @@ class AuthController extends GetxController {
         final currUser = await users.doc(_currentUser!.email).get();
         final currUserData = currUser.data() as Map<String, dynamic>;
 
-        user(UsersModel.fromJson(currUserData));
+        user(UsersModel(
+          creationTime: currUserData["creationTime"],
+          email: currUserData["email"],
+          keyName: currUserData["keyName"],
+          lastSignInTime: currUserData["lastSignInTime"],
+          name: currUserData["name"],
+          photoUrl: currUserData["photoUrl"],
+          status: currUserData["status"],
+          uid: currUserData["uid"],
+          updatedTime: currUserData["updatedTime"],
+        ));
+
+        final listChats =
+            await users.doc(_currentUser!.email).collection("chats").get();
+
+        if (listChats.docs.length != 0) {
+          List<ChatUser> dataListChats = List<ChatUser>.empty();
+          listChats.docs.forEach((element) {
+            var dataDocChat = element.data();
+            var dataDocChatId = element.id;
+            dataListChats.add(ChatUser(
+              chatId: dataDocChatId,
+              connection: dataDocChat["connection"],
+              lastTime: dataDocChat["lastTime"],
+              total_unread: dataDocChat["total_unread"],
+            ));
+          });
+          user.update((user) {
+            user!.chats = dataListChats;
+          });
+        } else {
+          user.update((user) {
+            user!.chats = [];
+          });
+        }
 
         return true;
-      } else {
-        return false;
       }
+      return false;
     } catch (err) {
       return false;
     }
-  }
-
-  Future<bool> skipIntro() async {
-    // untuk mengubah isSkipIntro => true
-    final box = GetStorage();
-    if (box.read('skipIntro') != null || box.read('skipIntro') == true) {
-      return true;
-    }
-    return false;
   }
 
   Future<void> login() async {
@@ -99,9 +130,6 @@ class AuthController extends GetxController {
 
       if (isSignIn) {
         // Kondisi berhasil login
-        print("Login Success with User:");
-        print(_currentUser);
-
         // untuk mendapatkan Google Auth
         final googleAuth = await _currentUser!.authentication;
 
@@ -114,9 +142,6 @@ class AuthController extends GetxController {
         await FirebaseAuth.instance
             .signInWithCredential(credential)
             .then((value) => userCredential = value);
-
-        print("User credential:");
-        print(userCredential);
 
         // simpan status user pernah login untuk menghindari halaman intro kesekian kali
         final box = GetStorage();
@@ -143,8 +168,9 @@ class AuthController extends GetxController {
             "lastSignInTime": userCredential!.user!.metadata.lastSignInTime!
                 .toIso8601String(),
             "updatedTime": DateTime.now().toIso8601String(),
-            "chats": [],
           });
+
+          await users.doc(_currentUser!.email).collection("chats");
         } else {
           await users.doc(_currentUser!.email).update({
             "lastSignInTime": userCredential!.user!.metadata.lastSignInTime!
@@ -155,7 +181,41 @@ class AuthController extends GetxController {
         final currUser = await users.doc(_currentUser!.email).get();
         final currUserData = currUser.data() as Map<String, dynamic>;
 
-        user(UsersModel.fromJson(currUserData));
+        user(UsersModel(
+          creationTime: currUserData["creationTime"],
+          email: currUserData["email"],
+          keyName: currUserData["keyName"],
+          lastSignInTime: currUserData["lastSignInTime"],
+          name: currUserData["name"],
+          photoUrl: currUserData["photoUrl"],
+          status: currUserData["status"],
+          uid: currUserData["uid"],
+          updatedTime: currUserData["updatedTime"],
+        ));
+
+        final listChats =
+            await users.doc(_currentUser!.email).collection("chats").get();
+
+        if (listChats.docs.length != 0) {
+          List<ChatUser> dataListChats = List<ChatUser>.empty();
+          listChats.docs.forEach((element) {
+            var dataDocChat = element.data();
+            var dataDocChatId = element.id;
+            dataListChats.add(ChatUser(
+              chatId: dataDocChatId,
+              connection: dataDocChat["connection"],
+              lastTime: dataDocChat["lastTime"],
+              total_unread: dataDocChat["total_unread"],
+            ));
+          });
+          user.update((user) {
+            user!.chats = dataListChats;
+          });
+        } else {
+          user.update((user) {
+            user!.chats = [];
+          });
+        }
 
         // untuk route ke halaman utama
         isAuth.value = true;
@@ -243,20 +303,23 @@ class AuthController extends GetxController {
     CollectionReference chats = firestore.collection("chats");
     CollectionReference users = firestore.collection("users");
 
-    final docUser = await users.doc(_currentUser!.email).get();
-    final docChats = (docUser.data() as Map<String, dynamic>)["chats"] as List;
+    final docChats =
+        await users.doc(_currentUser!.email).collection("chats").get();
 
-    if (docChats.length != 0) {
+    if (docChats.docs.length != 0) {
       // User sudah pernah chat dengan siapapun
-      docChats.forEach((singleChat) {
-        if (singleChat["connection"] == friendEmail) {
-          chat_id = singleChat["chat_id"];
-        }
-      });
+      final checkConnection = await users
+          .doc(_currentUser!.email)
+          .collection("chats")
+          .where("connection", isEqualTo: friendEmail)
+          .get();
 
-      if (chat_id != null) {
-        // Sudah pernah buat koneksi chat dengan => friendEmail
+      if (checkConnection.docs.length != 0) {
+        // sudah pernah buat koneksi dengan => friendEmail
         flagNewConnection = false;
+
+        // chat_id from chats collection
+        chat_id = checkConnection.docs[0].id;
       } else {
         // Belum pernah buat koneksi chat dengan => friendEmail
         // Buat koneksi chat baru
@@ -289,18 +352,39 @@ class AuthController extends GetxController {
         final chatDataId = chatsDocs.docs[0].id;
         final chatsData = chatsDocs.docs[0].data() as Map<String, dynamic>;
 
-        docChats.add({
+        await users
+            .doc(_currentUser!.email)
+            .collection("chats")
+            .doc(chatDataId)
+            .set({
           "connection": friendEmail,
-          "chat_id": chatDataId,
           "lastTime": chatsData["lastTime"],
           "total_unread": 0,
         });
 
-        await users.doc(_currentUser!.email).update({"chats": docChats});
+        final listChats =
+            await users.doc(_currentUser!.email).collection("chats").get();
 
-        user.update((user) {
-          user!.chats = docChats as List<ChatUser>;
-        });
+        if (listChats.docs.length != 0) {
+          List<ChatUser> dataListChats = List<ChatUser>.empty();
+          listChats.docs.forEach((element) {
+            var dataDocChat = element.data();
+            var dataDocChatId = element.id;
+            dataListChats.add(ChatUser(
+              chatId: dataDocChatId,
+              connection: dataDocChat["connection"],
+              lastTime: dataDocChat["lastTime"],
+              total_unread: dataDocChat["total_unread"],
+            ));
+          });
+          user.update((user) {
+            user!.chats = dataListChats;
+          });
+        } else {
+          user.update((user) {
+            user!.chats = [];
+          });
+        }
 
         chat_id = chatDataId;
         user.refresh();
@@ -314,18 +398,39 @@ class AuthController extends GetxController {
           "chat": [],
         });
 
-        docChats.add({
+        await users
+            .doc(_currentUser!.email)
+            .collection("chats")
+            .doc(newChatDoc.id)
+            .set({
           "connection": friendEmail,
-          "chat_id": newChatDoc.id,
           "lastTime": date,
           "total_unread": 0,
         });
 
-        await users.doc(_currentUser!.email).update({"chats": docChats});
+        final listChats =
+            await users.doc(_currentUser!.email).collection("chats").get();
 
-        user.update((user) {
-          user!.chats = docChats as List<ChatUser>;
-        });
+        if (listChats.docs.length != 0) {
+          List<ChatUser> dataListChats = List<ChatUser>.empty();
+          listChats.docs.forEach((element) {
+            var dataDocChat = element.data();
+            var dataDocChatId = element.id;
+            dataListChats.add(ChatUser(
+              chatId: dataDocChatId,
+              connection: dataDocChat["connection"],
+              lastTime: dataDocChat["lastTime"],
+              total_unread: dataDocChat["total_unread"],
+            ));
+          });
+          user.update((user) {
+            user!.chats = dataListChats;
+          });
+        } else {
+          user.update((user) {
+            user!.chats = [];
+          });
+        }
 
         chat_id = newChatDoc.id;
         user.refresh();
