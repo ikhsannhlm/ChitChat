@@ -73,23 +73,15 @@ class AuthController extends GetxController {
         final currUser = await users.doc(_currentUser!.email).get();
         final currUserData = currUser.data() as Map<String, dynamic>;
 
-        user(UsersModel(
-          creationTime: currUserData["creationTime"],
-          email: currUserData["email"],
-          keyName: currUserData["keyName"],
-          lastSignInTime: currUserData["lastSignInTime"],
-          name: currUserData["name"],
-          photoUrl: currUserData["photoUrl"],
-          status: currUserData["status"],
-          uid: currUserData["uid"],
-          updatedTime: currUserData["updatedTime"],
-        ));
+        user(UsersModel.fromJson(currUserData));
+
+        user.refresh();
 
         final listChats =
             await users.doc(_currentUser!.email).collection("chats").get();
 
         if (listChats.docs.length != 0) {
-          List<ChatUser> dataListChats = List<ChatUser>.empty();
+          List<ChatUser> dataListChats = [];
           listChats.docs.forEach((element) {
             var dataDocChat = element.data();
             var dataDocChatId = element.id;
@@ -108,6 +100,8 @@ class AuthController extends GetxController {
             user!.chats = [];
           });
         }
+
+        user.refresh();
 
         return true;
       }
@@ -181,23 +175,15 @@ class AuthController extends GetxController {
         final currUser = await users.doc(_currentUser!.email).get();
         final currUserData = currUser.data() as Map<String, dynamic>;
 
-        user(UsersModel(
-          creationTime: currUserData["creationTime"],
-          email: currUserData["email"],
-          keyName: currUserData["keyName"],
-          lastSignInTime: currUserData["lastSignInTime"],
-          name: currUserData["name"],
-          photoUrl: currUserData["photoUrl"],
-          status: currUserData["status"],
-          uid: currUserData["uid"],
-          updatedTime: currUserData["updatedTime"],
-        ));
+        user(UsersModel.fromJson(currUserData));
+
+        user.refresh();
 
         final listChats =
             await users.doc(_currentUser!.email).collection("chats").get();
 
         if (listChats.docs.length != 0) {
-          List<ChatUser> dataListChats = List<ChatUser>.empty();
+          List<ChatUser> dataListChats = [];
           listChats.docs.forEach((element) {
             var dataDocChat = element.data();
             var dataDocChatId = element.id;
@@ -216,6 +202,8 @@ class AuthController extends GetxController {
             user!.chats = [];
           });
         }
+
+        user.refresh();
 
         // untuk route ke halaman utama
         isAuth.value = true;
