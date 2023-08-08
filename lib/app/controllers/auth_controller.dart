@@ -1,4 +1,3 @@
-import 'package:chitchat/app/data/models/chats_model.dart';
 import 'package:chitchat/app/routes/app_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -250,7 +249,7 @@ class AuthController extends GetxController {
     if (docChats.length != 0) {
       // User sudah pernah chat dengan siapapun
       docChats.forEach((singleChat) {
-        if (singleChat["connections"] == friendEmail) {
+        if (singleChat["connection"] == friendEmail) {
           chat_id = singleChat["chat_id"];
         }
       });
@@ -272,7 +271,7 @@ class AuthController extends GetxController {
     if (flagNewConnection) {
       // Cek dari chats Collection => connection _currentUser dengan friendEmail
       final chatsDocs = await chats.where(
-        "connections",
+        "connection",
         whereIn: [
           [
             _currentUser!.email,
@@ -291,7 +290,7 @@ class AuthController extends GetxController {
         final chatsData = chatsDocs.docs[0].data() as Map<String, dynamic>;
 
         docChats.add({
-          "connections": friendEmail,
+          "connection": friendEmail,
           "chat_id": chatDataId,
           "lastTime": chatsData["lastTime"],
           "total_unread": 0,
@@ -308,7 +307,7 @@ class AuthController extends GetxController {
       } else {
         // Buat koneksi baru
         final newChatDoc = await chats.add({
-          "connections": [
+          "connection": [
             _currentUser!.email,
             friendEmail,
           ],
@@ -316,7 +315,7 @@ class AuthController extends GetxController {
         });
 
         docChats.add({
-          "connections": friendEmail,
+          "connection": friendEmail,
           "chat_id": newChatDoc.id,
           "lastTime": date,
           "total_unread": 0,

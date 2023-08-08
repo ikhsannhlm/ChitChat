@@ -10,20 +10,20 @@ String chatsToJson(Chats data) => json.encode(data.toJson());
 
 class Chats {
   Chats({
-    this.connections,
+    this.connection,
     this.chat,
   });
 
-  List<String>? connections;
+  List<String>? connection;
   List<Chat>? chat;
 
   factory Chats.fromJson(Map<String, dynamic> json) => Chats(
-        connections: List<String>.from(json["connections"].map((x) => x)),
+        connection: List<String>.from(json["connection"].map((x) => x)),
         chat: List<Chat>.from(json["chat"].map((x) => Chat.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "connections": List<dynamic>.from(connections!.map((x) => x)),
+        "connection": List<dynamic>.from(connection!.map((x) => x)),
         "chat": List<dynamic>.from(chat!.map((x) => x.toJson())),
       };
 }
