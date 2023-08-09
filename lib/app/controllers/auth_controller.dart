@@ -383,8 +383,9 @@ class AuthController extends GetxController {
             _currentUser!.email,
             friendEmail,
           ],
-          "chat": [],
         });
+
+        await chats.doc(newChatDoc.id).collection("chat");
 
         await users
             .doc(_currentUser!.email)
@@ -424,6 +425,12 @@ class AuthController extends GetxController {
         user.refresh();
       }
     }
-    Get.toNamed(Routes.CHAT_ROOM, arguments: chat_id);
+    Get.toNamed(
+      Routes.CHAT_ROOM,
+      arguments: {
+        "chat_id": "$chat_id",
+        "friendEmail": friendEmail,
+      },
+    );
   }
 }
