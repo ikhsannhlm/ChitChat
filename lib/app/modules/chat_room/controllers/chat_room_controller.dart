@@ -46,12 +46,16 @@ class ChatRoomController extends GetxController {
 
     if (checkChatsFriend.exists) {
       // update for friend DB
-      await users
-          .doc(argument["friendEmail"])
-          .collection("chats")
+      // first check total unread
+      final checkTotalUnread = await chats
           .doc(argument["chat_id"])
-          .get()
-          .then((value) => total_unread = value.data()!["total_unread"] as int);
+          .collection("chat")
+          .where("isRead", isEqualTo: false)
+          .where("pengirim", isEqualTo: email)
+          .get();
+
+      // toal_unread for friend
+      total_unread = checkTotalUnread.docs.length;
 
       await users
           .doc(argument["friendEmail"])
@@ -59,7 +63,7 @@ class ChatRoomController extends GetxController {
           .doc(argument["chat_id"])
           .update({
         "lastTime": date,
-        "total_unread": total_unread + 1,
+        "total_unread": total_unread,
       });
     } else {
       // new for friend DB
@@ -70,7 +74,7 @@ class ChatRoomController extends GetxController {
           .set({
         "connection": email,
         "lastTime": date,
-        "total_unread": total_unread + 1,
+        "total_unread": 1,
       });
     }
   }
