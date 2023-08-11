@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chitchat/app/controllers/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -27,25 +29,85 @@ class ChatRoomView extends GetView<ChatRoomController> {
               CircleAvatar(
                 radius: 23,
                 backgroundColor: Colors.grey,
-                child: Image.asset("assets/logo/noimage.png"),
+                child: StreamBuilder<DocumentSnapshot<Object?>>(
+                  builder: (context, snapFriendUser) {
+                    Stream:
+                    controller.streamFriendData(
+                        (Get.arguments as Map<String, dynamic>)["friendEmail"]);
+                    if (snapFriendUser.connectionState ==
+                        ConnectionState.active) {
+                      var dataFriend =
+                          snapFriendUser.data!.data() as Map<String, dynamic>;
+                      if (dataFriend["photoUrl"] == "noimage") {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.asset(
+                            "assets/logo/noimage.png",
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      }
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Image.network(
+                          dataFriend["photoUrl"],
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.asset(
+                        "assets/logo/noimage.png",
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Lorem Ipsum',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            Text(
-              'statsnya lorem ',
-              style: TextStyle(
-                fontSize: 14,
-              ),
-            ),
-          ],
+        title: StreamBuilder<DocumentSnapshot<Object?>>(
+          builder: (context, snapFriendUser) {
+            Stream:
+            controller.streamFriendData(
+                (Get.arguments as Map<String, dynamic>)["friendEmail"]);
+            if (snapFriendUser.connectionState == ConnectionState.active) {
+              var dataFriend =
+                  snapFriendUser.data!.data() as Map<String, dynamic>;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dataFriend["name"],
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    dataFriend["status"],
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Loading...',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'Loading... ',
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
       body: WillPopScope(
@@ -66,7 +128,13 @@ class ChatRoomView extends GetView<ChatRoomController> {
                   builder: (context, snapshot1) {
                     if (snapshot1.connectionState == ConnectionState.active) {
                       var alldata = snapshot1.data!.docs;
+                      Timer(
+                        Duration.zero,
+                        () => controller.scrollC.jumpTo(
+                            controller.scrollC.position.maxScrollExtent),
+                      );
                       return ListView.builder(
+                        controller: controller.scrollC,
                         itemCount: alldata.length,
                         itemBuilder: (context, index) => ItemChat(
                           msg: "${alldata[index]["msg"]}",
@@ -74,22 +142,13 @@ class ChatRoomView extends GetView<ChatRoomController> {
                                   authC.user.value.email!
                               ? true
                               : false,
+                          time: "${alldata[index]["time"]}",
                         ),
                       );
                     }
                     return Center(child: CircularProgressIndicator());
                   },
                 ),
-                // child: ListView(
-                //   children: [
-                //     ItemChat(
-                //       isSender: true,
-                //     ),
-                //     ItemChat(
-                //       isSender: false,
-                //     ),
-                //   ],
-                // ),
               ),
             ),
             Container(
@@ -104,8 +163,14 @@ class ChatRoomView extends GetView<ChatRoomController> {
                   Expanded(
                     child: Container(
                       child: TextField(
+                        autocorrect: false,
                         controller: controller.chatC,
                         focusNode: controller.focusNode,
+                        onEditingComplete: () => controller.newChat(
+                          authC.user.value.email!,
+                          Get.arguments as Map<String, dynamic>,
+                          controller.chatC.text,
+                        ),
                         decoration: InputDecoration(
                           prefixIcon: IconButton(
                             onPressed: () {
@@ -199,10 +264,12 @@ class ItemChat extends StatelessWidget {
     Key? key,
     required this.isSender,
     required this.msg,
+    required this.time,
   }) : super(key: key);
 
   final bool isSender;
   final String msg;
+  final String time;
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +307,7 @@ class ItemChat extends StatelessWidget {
             height: 5,
           ),
           Text(
-            "12.32 PM",
+            "${DateTime.parse(time)}",
             style: TextStyle(fontSize: 10, color: Colors.black54),
           )
         ],

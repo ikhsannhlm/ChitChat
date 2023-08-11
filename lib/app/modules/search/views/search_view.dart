@@ -1,11 +1,10 @@
 import 'package:chitchat/app/controllers/auth_controller.dart';
 import 'package:chitchat/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../controllers/search_controller.dart';
-import 'package:lottie/lottie.dart';
 
 class SearchView extends GetView<SearchController> {
   final authC = Get.find<AuthController>();
@@ -14,13 +13,12 @@ class SearchView extends GetView<SearchController> {
     return Scaffold(
       appBar: PreferredSize(
         child: AppBar(
+          backgroundColor: Colors.blue,
           title: Text('Search'),
           centerTitle: true,
           leading: IconButton(
             onPressed: () => Get.back(),
-            icon: Icon(
-              Icons.arrow_back,
-            ),
+            icon: Icon(Icons.arrow_back),
           ),
           flexibleSpace: Padding(
             padding: const EdgeInsets.fromLTRB(30, 50, 30, 20),
@@ -50,7 +48,7 @@ class SearchView extends GetView<SearchController> {
                       width: 1,
                     ),
                   ),
-                  hintText: "Search new friend...",
+                  hintText: "Search new friend here..",
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 30,
                     vertical: 20,
@@ -91,7 +89,7 @@ class SearchView extends GetView<SearchController> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child:
-                          controller.tempSearch[index]["photoUrl"] == "no image"
+                          controller.tempSearch[index]["photoUrl"] == "noimage"
                               ? Image.asset(
                                   "assets/logo/noimage.png",
                                   fit: BoxFit.cover,
