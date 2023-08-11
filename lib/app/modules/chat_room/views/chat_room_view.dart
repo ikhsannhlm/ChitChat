@@ -46,14 +46,15 @@ class ChatRoomView extends GetView<ChatRoomController> {
                             fit: BoxFit.cover,
                           ),
                         );
+                      } else {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.network(
+                            dataFriend["photoUrl"],
+                            fit: BoxFit.cover,
+                          ),
+                        );
                       }
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.network(
-                          dataFriend["photoUrl"],
-                          fit: BoxFit.cover,
-                        ),
-                      );
                     }
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(50),
@@ -69,10 +70,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
           ),
         ),
         title: StreamBuilder<DocumentSnapshot<Object?>>(
+          stream: controller.streamFriendData(
+              (Get.arguments as Map<String, dynamic>)["friendEmail"]),
           builder: (context, snapFriendUser) {
-            Stream:
-            controller.streamFriendData(
-                (Get.arguments as Map<String, dynamic>)["friendEmail"]);
             if (snapFriendUser.connectionState == ConnectionState.active) {
               var dataFriend =
                   snapFriendUser.data!.data() as Map<String, dynamic>;
@@ -81,7 +81,11 @@ class ChatRoomView extends GetView<ChatRoomController> {
                 children: [
                   Text(
                     dataFriend["name"],
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                   Text(
                     dataFriend["status"],
