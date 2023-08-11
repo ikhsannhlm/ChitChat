@@ -37,27 +37,29 @@ class ProfileView extends GetView<ProfileController> {
           Container(
             child: Column(
               children: [
-                AvatarGlow(
-                  endRadius: 100,
-                  glowColor: Colors.black,
-                  duration: Duration(
-                    seconds: 2,
-                  ),
-                  child: Container(
-                    margin: EdgeInsets.all(15),
-                    width: 150,
-                    height: 150,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: authC.user.value.photoUrl! == "noimage"
-                          ? Image.asset(
-                              "assets/logo/noimage.png",
-                              fit: BoxFit.cover,
-                            )
-                          : Image.network(
-                              authC.user.value.photoUrl!,
-                              fit: BoxFit.cover,
-                            ),
+                Obx(
+                  () => AvatarGlow(
+                    endRadius: 100,
+                    glowColor: Colors.black,
+                    duration: Duration(
+                      seconds: 2,
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.all(15),
+                      width: 150,
+                      height: 150,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: authC.user.value.photoUrl! == "noimage"
+                            ? Image.asset(
+                                "assets/logo/noimage.png",
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                authC.user.value.photoUrl!,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
                   ),
                 ),
