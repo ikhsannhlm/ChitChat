@@ -31,10 +31,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
                 radius: 23,
                 backgroundColor: Colors.grey,
                 child: StreamBuilder<DocumentSnapshot<Object?>>(
+                  stream: controller.streamFriendData(
+                      (Get.arguments as Map<String, dynamic>)["friendEmail"]),
                   builder: (context, snapFriendUser) {
-                    Stream:
-                    controller.streamFriendData(
-                        (Get.arguments as Map<String, dynamic>)["friendEmail"]);
                     if (snapFriendUser.connectionState ==
                         ConnectionState.active) {
                       var dataFriend =
