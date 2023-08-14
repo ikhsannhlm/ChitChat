@@ -1,11 +1,14 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:chitchat/app/controllers/auth_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:flutter/services.dart';
+
 import 'app/routes/app_pages.dart';
 import 'app/utils/splash_screen.dart';
-import 'app/controllers/auth_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +30,13 @@ class MyApp extends StatelessWidget {
           return Obx(
             () => GetMaterialApp(
               debugShowCheckedModeBanner: false,
-              title: "ChitChat",
+              title: "ChatApp",
+              theme: ThemeData(
+                brightness: Brightness.light,
+                primaryColor: Colors.white,
+                accentColor: Colors.black,
+                buttonColor: Colors.blue,
+              ),
               initialRoute: authC.isSkipIntro.isTrue
                   ? authC.isAuth.isTrue
                       ? Routes.HOME

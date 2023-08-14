@@ -1,25 +1,42 @@
-import 'package:chitchat/app/controllers/auth_controller.dart';
-import 'package:flutter/material.dart';
+// ignore_for_file: deprecated_member_use
 
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:chitchat/app/routes/app_pages.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/app_pages.dart';
 import '../controllers/profile_controller.dart';
-import 'package:avatar_glow/avatar_glow.dart';
+import '../../../controllers/auth_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
   final authC = Get.find<AuthController>();
+
+  final ThemeData light = ThemeData(
+    brightness: Brightness.light,
+    primaryColor: Colors.white,
+    accentColor: Colors.black,
+    buttonColor: Colors.blue,
+  );
+
+  final ThemeData dark = ThemeData(
+    brightness: Brightness.dark,
+    primaryColor: Color(0xFF686D76),
+    accentColor: Colors.white,
+    buttonColor: Colors.blue,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Get.theme.primaryColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
+        backgroundColor: Get.isDarkMode ? Color(0xFF373A40) : Colors.white,
         leading: IconButton(
           onPressed: () => Get.back(),
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.black,
+            color: Get.theme.accentColor,
           ),
         ),
         actions: [
@@ -27,7 +44,7 @@ class ProfileView extends GetView<ProfileController> {
             onPressed: () => authC.logout(),
             icon: Icon(
               Icons.logout,
-              color: Colors.black,
+              color: Get.theme.accentColor,
             ),
           ),
         ],
@@ -39,17 +56,15 @@ class ProfileView extends GetView<ProfileController> {
               children: [
                 Obx(
                   () => AvatarGlow(
-                    endRadius: 100,
+                    endRadius: 110,
                     glowColor: Colors.black,
-                    duration: Duration(
-                      seconds: 2,
-                    ),
+                    duration: Duration(seconds: 2),
                     child: Container(
                       margin: EdgeInsets.all(15),
-                      width: 150,
-                      height: 150,
+                      width: 175,
+                      height: 175,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
+                        borderRadius: BorderRadius.circular(200),
                         child: authC.user.value.photoUrl! == "noimage"
                             ? Image.asset(
                                 "assets/logo/noimage.png",
@@ -73,9 +88,6 @@ class ProfileView extends GetView<ProfileController> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(
-                  height: 5,
-                ),
                 Text(
                   "${authC.user.value.email!}",
                   style: TextStyle(
@@ -86,9 +98,7 @@ class ProfileView extends GetView<ProfileController> {
               ],
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
           Expanded(
             child: Container(
               child: Column(
@@ -116,7 +126,7 @@ class ProfileView extends GetView<ProfileController> {
                     trailing: Icon(Icons.arrow_right),
                   ),
                   ListTile(
-                    onTap: () {},
+                    onTap: () => Get.changeTheme(Get.isDarkMode ? light : dark),
                     leading: Icon(Icons.color_lens),
                     title: Text(
                       "Change Theme",
@@ -124,7 +134,7 @@ class ProfileView extends GetView<ProfileController> {
                         fontSize: 22,
                       ),
                     ),
-                    trailing: Text("Light"),
+                    trailing: Text(Get.isDarkMode ? "Dark" : "Light"),
                   ),
                 ],
               ),
@@ -132,20 +142,20 @@ class ProfileView extends GetView<ProfileController> {
           ),
           Container(
             margin:
-                EdgeInsets.only(bottom: context.mediaQueryPadding.bottom + 20),
+                EdgeInsets.only(bottom: context.mediaQueryPadding.bottom + 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "ChitChat",
+                  "Chit-Chat",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: Get.isDarkMode ? Colors.white54 : Colors.black54,
                   ),
                 ),
                 Text(
                   "v.1.0",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: Get.isDarkMode ? Colors.white54 : Colors.black54,
                   ),
                 ),
               ],

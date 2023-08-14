@@ -1,29 +1,35 @@
+import 'package:chitchat/app/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../../../controllers/auth_controller.dart';
 import '../controllers/update_status_controller.dart';
 
 class UpdateStatusView extends GetView<UpdateStatusController> {
   final authC = Get.find<AuthController>();
-
   @override
   Widget build(BuildContext context) {
     controller.statusC.text = authC.user.value.status!;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
         ),
         backgroundColor: Colors.blue,
-        title: Text('Update Status'),
+        title: Text(
+          'Update Status',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
@@ -36,7 +42,7 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
               decoration: InputDecoration(
                 labelText: "Status",
                 labelStyle: TextStyle(
-                  color: Colors.black,
+                  color: Get.isDarkMode ? Colors.white : Colors.black,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(100),
@@ -50,9 +56,7 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+            SizedBox(height: 30),
             Container(
               width: Get.width,
               child: ElevatedButton(
@@ -60,20 +64,20 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
                   authC.updateStatus(controller.statusC.text);
                 },
                 child: Text(
-                  "Update",
+                  "UPDATE",
                   style: TextStyle(
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  primary: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: 30,
-                    vertical: 15,
+                    vertical: 20,
                   ),
                 ),
               ),

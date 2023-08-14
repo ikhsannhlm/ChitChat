@@ -17,6 +17,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         leadingWidth: 100,
         leading: InkWell(
           onTap: () => Get.back(),
@@ -25,7 +26,10 @@ class ChatRoomView extends GetView<ChatRoomController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(width: 5),
-              Icon(Icons.arrow_back),
+              Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
               SizedBox(width: 5),
               CircleAvatar(
                 radius: 23,
@@ -91,6 +95,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                     dataFriend["status"],
                     style: TextStyle(
                       fontSize: 14,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -101,7 +106,10 @@ class ChatRoomView extends GetView<ChatRoomController> {
               children: [
                 Text(
                   'Loading...',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   'Loading... ',
@@ -203,10 +211,12 @@ class ChatRoomView extends GetView<ChatRoomController> {
             ),
             Container(
               margin: EdgeInsets.only(
-                  bottom: controller.isShowEmoji.isTrue
-                      ? 5
-                      : context.mediaQueryPadding.bottom),
+                bottom: controller.isShowEmoji.isTrue
+                    ? 5
+                    : context.mediaQueryPadding.bottom,
+              ),
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              width: Get.width,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -270,6 +280,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                           controller.deleteEmoji();
                         },
                         config: Config(
+                          backspaceColor: Colors.blue,
                           columns: 7,
                           emojiSizeMax: 32.0,
                           verticalSpacing: 0,
@@ -280,7 +291,6 @@ class ChatRoomView extends GetView<ChatRoomController> {
                           indicatorColor: Colors.blue,
                           iconColor: Colors.grey,
                           iconColorSelected: Colors.blue,
-                          backspaceColor: Colors.blue,
                           skinToneDialogBgColor: Colors.white,
                           skinToneIndicatorColor: Colors.grey,
                           enableSkinTones: true,
@@ -350,12 +360,12 @@ class ItemChat extends StatelessWidget {
             padding: EdgeInsets.all(10),
             child: Text(
               "$msg",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
-          SizedBox(
-            height: 5,
-          ),
+          SizedBox(height: 5),
           Text(DateFormat.jm().format(DateTime.parse(time))),
         ],
       ),

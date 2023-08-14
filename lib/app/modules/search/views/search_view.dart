@@ -82,7 +82,7 @@ class SearchView extends GetView<SearchController> {
                 itemCount: controller.tempSearch.length,
                 itemBuilder: (context, index) => ListTile(
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   leading: CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.black26,
@@ -110,7 +110,7 @@ class SearchView extends GetView<SearchController> {
                   subtitle: Text(
                     "${controller.tempSearch[index]["email"]}",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -119,7 +119,7 @@ class SearchView extends GetView<SearchController> {
                       controller.tempSearch[index]["email"],
                     ),
                     child: Chip(
-                      label: Text("Message"),
+                      label: Text("Chat"),
                     ),
                   ),
                 ),

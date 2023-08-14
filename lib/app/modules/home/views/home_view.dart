@@ -1,18 +1,41 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:chitchat/app/controllers/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
 import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   final authC = Get.find<AuthController>();
 
+  final ThemeData light = ThemeData(
+    brightness: Brightness.light,
+    primaryColor: Colors.white,
+    accentColor: Colors.black,
+    buttonColor: Color(0xFF19A7CE),
+  );
+  // F6F1F1
+  // AFD3E2
+  // 19A7CE
+  // 4682A9
+
+  final ThemeData dark = ThemeData(
+    brightness: Brightness.dark,
+    primaryColor: Color(0xFF686D76),
+    accentColor: Colors.white,
+    buttonColor: Colors.blue,
+  );
+  // 1B262C
+  // 0F4C75
+  // 3282B8
+  // BBE1FA
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Get.theme.primaryColor,
       body: Column(
         children: [
           Material(
@@ -25,15 +48,8 @@ class HomeView extends GetView<HomeController> {
                     color: Colors.black38,
                   ),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.white10,
-                      blurRadius: 1.5,
-                      spreadRadius: 0.0,
-                      offset: Offset(1.5, 1.5)),
-                ],
               ),
-              padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+              padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -94,7 +110,7 @@ class HomeView extends GetView<HomeController> {
                                       listDocsChats[index]["connection"],
                                     ),
                                     leading: CircleAvatar(
-                                      radius: 30,
+                                      radius: 25,
                                       backgroundColor: Colors.black26,
                                       child: ClipRRect(
                                         borderRadius:
@@ -141,7 +157,7 @@ class HomeView extends GetView<HomeController> {
                                       listDocsChats[index]["connection"],
                                     ),
                                     leading: CircleAvatar(
-                                      radius: 30,
+                                      radius: 25,
                                       backgroundColor: Colors.black26,
                                       child: ClipRRect(
                                         borderRadius:
@@ -168,7 +184,7 @@ class HomeView extends GetView<HomeController> {
                                       "${data["status"]}",
                                       style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     trailing: listDocsChats[index]
@@ -203,7 +219,12 @@ class HomeView extends GetView<HomeController> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(Routes.SEARCH),
-        child: Icon(Icons.search),
+        child: Icon(
+          Icons.search,
+          size: 30,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.blue,
       ),
     );
   }

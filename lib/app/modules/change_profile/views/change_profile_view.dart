@@ -1,29 +1,36 @@
-import 'dart:io';
+// ignore_for_file: deprecated_member_use
 
+import 'dart:io';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:chitchat/app/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
 import '../controllers/change_profile_controller.dart';
-import 'package:avatar_glow/avatar_glow.dart';
 
 class ChangeProfileView extends GetView<ChangeProfileController> {
   final authC = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     controller.emailC.text = authC.user.value.email!;
     controller.nameC.text = authC.user.value.name!;
     controller.statusC.text = authC.user.value.status!;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
         ),
         backgroundColor: Colors.blue,
-        title: Text('Change Profile'),
+        title: Text(
+          'Change Profile',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -34,26 +41,24 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
               );
             },
             icon: Icon(Icons.save),
-          )
+          ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
             AvatarGlow(
               endRadius: 75,
               glowColor: Colors.black,
-              duration: Duration(
-                seconds: 2,
-              ),
+              duration: Duration(seconds: 2),
               child: Container(
                 margin: EdgeInsets.all(15),
                 width: 120,
                 height: 120,
                 child: Obx(
                   () => ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(200),
                     child: authC.user.value.photoUrl! == "noimage"
                         ? Image.asset(
                             "assets/logo/noimage.png",
@@ -67,7 +72,7 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             TextField(
               controller: controller.emailC,
               readOnly: true,
@@ -76,7 +81,7 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
               decoration: InputDecoration(
                 labelText: "Email",
                 labelStyle: TextStyle(
-                  color: Colors.black,
+                  color: Get.isDarkMode ? Colors.white : Colors.black,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(100),
@@ -98,7 +103,7 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
               decoration: InputDecoration(
                 labelText: "Name",
                 labelStyle: TextStyle(
-                  color: Colors.black,
+                  color: Get.isDarkMode ? Colors.white : Colors.black,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(100),
@@ -115,18 +120,18 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
             SizedBox(height: 10),
             TextField(
               controller: controller.statusC,
-              textInputAction: TextInputAction.next,
+              cursorColor: Colors.black,
+              textInputAction: TextInputAction.done,
               onEditingComplete: () {
                 authC.changeProfile(
                   controller.nameC.text,
                   controller.statusC.text,
                 );
               },
-              cursorColor: Colors.black,
               decoration: InputDecoration(
                 labelText: "Status",
                 labelStyle: TextStyle(
-                  color: Colors.black,
+                  color: Get.isDarkMode ? Colors.white : Colors.black,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(100),
@@ -142,15 +147,14 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
             ),
             SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GetBuilder<ChangeProfileController>(
-                    builder: (c) => controller.pickedImage != null
+                    builder: (c) => c.pickedImage != null
                         ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 height: 110,
@@ -165,7 +169,7 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
                                             BorderRadius.circular(100),
                                         image: DecorationImage(
                                           image: FileImage(
-                                            File(controller.pickedImage!.path),
+                                            File(c.pickedImage!.path),
                                           ),
                                           fit: BoxFit.cover,
                                         ),
@@ -206,15 +210,12 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
                               ),
                             ],
                           )
-                        : Text(
-                            "no image",
-                            style: TextStyle(color: Colors.black38),
-                          ),
+                        : Text("no image"),
                   ),
                   TextButton(
                     onPressed: () => controller.selectImage(),
                     child: Text(
-                      "Choose",
+                      "chosen",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -223,7 +224,7 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 30),
             Container(
               width: Get.width,
               child: ElevatedButton(
@@ -234,20 +235,20 @@ class ChangeProfileView extends GetView<ChangeProfileController> {
                   );
                 },
                 child: Text(
-                  "Update",
+                  "UPDATE",
                   style: TextStyle(
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  primary: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),
                   padding: EdgeInsets.symmetric(
                     horizontal: 30,
-                    vertical: 15,
+                    vertical: 20,
                   ),
                 ),
               ),
